@@ -1,5 +1,7 @@
 from bs4 import NavigableString, BeautifulSoup
+import click
 import codecs
+import os
 import re
 
 
@@ -89,3 +91,13 @@ def reinflate_file(template_fname, source_fname, out_fname):
     out = codecs.open(out_fname, 'w', 'utf8')
     out.write(f_as_str)
     out.close()
+
+
+@click.command()
+@click.argument('ebook', type=click.Path(exists=True))
+@click.argument('out', type=click.Path(exists=False))
+def expand_vellum(ebook, out):
+    clipped_filename = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        'clipped.html')
+    reinflate_file(clipped_filename, ebook, out)

@@ -1,0 +1,63 @@
+.align-left {
+    text-align: left;
+}
+.align-center {
+    text-align: center;
+}
+.align-right {
+    text-align: right;
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 0;
+    text-indent: 1em;
+}
+p:first-child {
+    text-indent: 0;
+}
+
+div>p {
+    width: 100%;
+}
+
+div {
+    margin-top: 1em;
+    padding: 1ex;
+    width: 55%;
+}
+
+.mindworm {
+    font-family: sans-serif;
+    text-indent: 0;
+    margin-left: 1em;
+}
+
+h1, h2, h3, h4, h5 {
+    text-align: center;
+    width: 55%;
+}
+
+.modern {
+// font-family: something;
+}
+.mythic {
+// font-family: something;
+}
+.mundane {
+// font-family: something;
+}
+
+.highlight div {
+    border: 1px solid black;
+}
+
+.highlight .modern {
+    background-color: Azure;
+}
+.highlight .mythic {
+    background-color: Bisque;
+}
+.highlight .mundane {
+    background-color: Khaki;
+}
