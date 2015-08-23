@@ -230,7 +230,7 @@ input.margin-toggle { display: none; }
 
 label.sidenote-number { display: inline; }
 
-label.margin-toggle:not(.sidenote-number) { display: none; }
+label.margin-toggle:not(.sidenote-number) { display: inline; }
 
 @media(max-width: 760px) { label.margin-toggle:not(.sidenote-number) { display: inline; }
                            .sidenote, .marginnote { display: none; }

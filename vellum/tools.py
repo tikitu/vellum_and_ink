@@ -37,9 +37,62 @@ def str_iter(soup):
     if isinstance(soup, NavigableString):
         yield soup
     else:
+        if 'annotation' in soup.get('class', []):
+            return
         for content in soup.contents:
             for s in str_iter(content):
                 yield s
+
+
+note_counter = 1
+
+
+def site_annotations(soup, top_level_soup):
+    global note_counter
+
+    annotations = []
+    for content in list(soup.contents):
+        if isinstance(content, NavigableString):
+            pass
+        elif 'annotation' in content.get('class', []):
+            annotations.append(content.extract())
+        else:
+            site_annotations(content, top_level_soup)
+    contents = list(soup.contents)
+    for annotation in annotations:
+        new_contents = []
+        found = False
+        for content in contents:
+            if found:
+                new_contents.append(content)
+            else:
+                if isinstance(content, NavigableString):
+                    split_content = content.split(annotation['data-anchor'])
+                    if len(split_content) > 1:
+                        found = True
+                        new_label = top_level_soup.new_tag('label')
+                        new_label['class'] = 'margin-toggle annotation-anchor'
+                        new_label['for'] = 'note{}'.format(note_counter)
+                        new_label.string = annotation['data-anchor']
+                        new_input = top_level_soup.new_tag('input')
+                        new_input['type'] = 'checkbox'
+                        new_input['id'] = 'note{}'.format(note_counter)
+                        new_input['class'] = 'margin-toggle'
+                        annotation['data-anchor'] = None
+                        annotation['class'].append('marginnote')
+                        new_contents.extend((
+                            NavigableString(split_content[0]),
+                            annotation,
+                            new_label,
+                            new_input,
+                            NavigableString(split_content[1])))
+                        note_counter += 1
+                    else:
+                        new_contents.append(content)
+        if found:
+            soup.contents = new_contents
+        else:
+            raise ValueError('Annotation ' + annotation + ' not found')
 
 
 def reinflate(template, source):
@@ -88,8 +141,11 @@ def reinflate_file(template_fname, source_fname, out_fname):
         'I am legion; <span class="mundane">the kingdom is within us.</span>')
     f_as_str = re.sub(r'</em>[ \n]+<em>', ' ', f_as_str)
 
+    soup = BeautifulSoup(f_as_str, 'html.parser')
+    site_annotations(soup, soup)
+
     out = codecs.open(out_fname, 'w', 'utf8')
-    out.write(f_as_str)
+    out.write(unicode(soup))
     out.close()
 
 
